@@ -1,23 +1,17 @@
 package model;
 
 import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.Data;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
-@Value
+@Data
 @Builder
 public class Film {
-    @NonNull
-    int id;
-    @NonNull
-    String name;
-    @NonNull
-    String description;
-    @NonNull
-    LocalDate releaseDate;
-    @NonNull
-    Duration duration;
+    private int id;
+    private String name;
+    private String description;
+    private LocalDate releaseDate;
+    private Duration duration;
 }
