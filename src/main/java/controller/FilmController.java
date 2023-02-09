@@ -6,6 +6,7 @@ import model.Film;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +42,8 @@ public class FilmController {
         log.info("Получен запрос к эндпойнту: 'PUT /film'");
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
-        } else createFilm(film);
-        return film;
+            return film;
+        } else return createFilm(film);
     }
 
     private void getNextId() {
@@ -54,7 +55,7 @@ public class FilmController {
             throw new ValidationException("название не может быть пустым.");
         if (film.getDescription().length() > 200)
             throw new ValidationException("максимальная длина описания — 200 символов");
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28)))
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, Month.DECEMBER, 28)))
             throw new ValidationException("дата релиза — не раньше 28 декабря 1895 года");
         if (film.getDuration().toNanos() <= 0)
             throw new ValidationException("продолжительность фильма должна быть положительной");
