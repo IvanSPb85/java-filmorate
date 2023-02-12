@@ -46,6 +46,7 @@ public class FilmController {
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
         } else {
+            log.warn("Фильм по запросу не найден в хранилище!");
             response.setStatus(404);
         }
         return film;
@@ -55,8 +56,8 @@ public class FilmController {
         counterId++;
     }
 
-    private void isValid(Film film) throws ValidationException {
-        if (film.getName().isBlank())
+    public void isValid(Film film) throws ValidationException {
+        if (film.getName() == null || film.getName().isBlank())
             throw new ValidationException("название не может быть пустым.");
         if (film.getDescription().length() > 200)
             throw new ValidationException("максимальная длина описания — 200 символов");
