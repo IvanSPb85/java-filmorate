@@ -40,7 +40,7 @@ public class FilmControllerTests {
 
     @Test
     public void isValidFilmNameEmptyMustThrowValidateExceptionTest() {
-        film.setName("");
+        film.setName(" ");
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> controller.isValid(film));
         assertEquals("название не может быть пустым.", exception.getMessage());
