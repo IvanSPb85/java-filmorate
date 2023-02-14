@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,36 +20,35 @@ public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
 
     @GetMapping
-    public Collection findAllUsers() {
+    public Collection<User> findAllUsers() {
         return users.values();
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user, HttpServletResponse response) {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         log.info("Получен запрос к эндпойнту: 'POST /users'");
         try {
             isValid(user);
         } catch (ValidationException e) {
-            log.warn("Пользователь не прошёл валидацию!", e);
-            response.setStatus(400);
-            return user;
+            log.warn("Пользователь не прошёл валидацию по причине: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(user);
         }
         getNextId();
         user.setId(counterId);
         users.put(counterId, user);
-        return user;
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user, HttpServletResponse response) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         log.info("Получен запрос к эндпойнту: 'PUT /users'");
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
         } else {
             log.warn("Данный пользователь не найден!");
-            response.setStatus(404);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
         }
-        return user;
+        return ResponseEntity.ok(user);
     }
 
     private void getNextId() {
