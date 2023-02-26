@@ -2,17 +2,17 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validator.FilmValidation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.Month;
 
-public class FilmControllerTests {
-    FilmController controller = new FilmController();
+public class FilmValidationTests {
+    FilmValidation validation = new FilmValidation();
     Film film;
 
     @BeforeEach
@@ -27,14 +27,14 @@ public class FilmControllerTests {
 
     @Test
     public void isValidFilmNotThrowValidateExceptionTest() {
-        controller.isValid(film);
+        validation.isValid(film);
     }
 
     @Test
     public void isValidFilmNameNullMustThrowValidateExceptionTest() {
         film.setName(null);
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(film));
+                () -> validation.isValid(film));
         assertEquals("название не может быть пустым.", exception.getMessage());
     }
 
@@ -42,7 +42,7 @@ public class FilmControllerTests {
     public void isValidFilmNameEmptyMustThrowValidateExceptionTest() {
         film.setName(" ");
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(film));
+                () -> validation.isValid(film));
         assertEquals("название не может быть пустым.", exception.getMessage());
     }
 
@@ -50,7 +50,7 @@ public class FilmControllerTests {
     public void isValidFilmFailDescriptionMustThrowValidateExceptionTest() {
         film.setDescription("a".repeat(201));
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(film));
+                () -> validation.isValid(film));
         assertEquals("максимальная длина описания — 200 символов", exception.getMessage());
     }
 
@@ -58,7 +58,7 @@ public class FilmControllerTests {
     public void isValidFilmFailReleaseDateMustThrowValidateExceptionTest() {
         film.setReleaseDate(LocalDate.of(1895, Month.DECEMBER, 27));
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(film));
+                () -> validation.isValid(film));
         assertEquals("дата релиза — не раньше 28 декабря 1895 года", exception.getMessage());
     }
 
@@ -66,7 +66,7 @@ public class FilmControllerTests {
     public void isValidFilmNotPositiveDurationMustThrowValidateExceptionTest() {
         film.setDuration(0);
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(film));
+                () -> validation.isValid(film));
         assertEquals("продолжительность фильма должна быть положительной", exception.getMessage());
     }
 }
