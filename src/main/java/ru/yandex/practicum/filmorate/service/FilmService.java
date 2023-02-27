@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -25,7 +24,9 @@ public class FilmService {
     }
 
     public void deleteLike(Long filmId, Long userId) {
-        findFilm(filmId).getRating().remove(userId);
+        Film film = findFilm(filmId);
+        if (film.getRating().contains(userId)) film.getRating().remove(userId);
+        else throw new NoSuchElementException();
     }
 
     public List<Film> findPopularFilms(int count) {

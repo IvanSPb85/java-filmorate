@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @Slf4j
@@ -52,6 +54,11 @@ public class FilmController {
     public ResponseEntity<List<Film>> findPopularFilms(
             @RequestParam(defaultValue = "10") Integer count) {
         return new ResponseEntity<>(service.findPopularFilms(count), HttpStatus.OK);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleIllegalCount(final NoSuchElementException e) {
+        return new ResponseEntity<>(Map.of("error", "film not found"), HttpStatus.NOT_FOUND);
     }
 }
 

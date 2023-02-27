@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
@@ -38,12 +40,12 @@ public class UserController {
         return new ResponseEntity<>(service.findUser(id), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/friends/{friendId}") // to do
+    @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId) {
         service.addFriend(id, friendId);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}") // TODO: 27.02.2023
+    @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
         service.deleteFriend(id, friendId);
     }
@@ -56,5 +58,10 @@ public class UserController {
     @GetMapping("{id}/friends/common/{otherId}")
     public ResponseEntity<List<User>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return new ResponseEntity<>(service.findCommonFriends(id, otherId), HttpStatus.OK);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleIllegalCount(final NoSuchElementException e) {
+        return new ResponseEntity<>(Map.of("error", "user not found"), HttpStatus.NOT_FOUND);
     }
 }
