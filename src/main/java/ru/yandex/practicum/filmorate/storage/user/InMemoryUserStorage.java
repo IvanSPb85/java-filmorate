@@ -28,7 +28,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public ResponseEntity<User> createUser(User user) {
-        log.info("Получен запрос к эндпойнту: 'POST /users'");
         try {
             validation.isValid(user);
         } catch (ValidationException e) {
@@ -43,7 +42,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public ResponseEntity<User> updateUser(User user) {
-        log.info("Получен запрос к эндпойнту: 'PUT /users'");
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
         } else {

@@ -28,7 +28,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public ResponseEntity<Film> createFilm(Film film) {
-        log.info("Получен запрос к эндпойнту: 'POST /films'");
         try {
             validation.isValid(film);
         } catch (ValidationException e) {
@@ -43,7 +42,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public ResponseEntity<Film> updateFilm(Film film) {
-        log.info("Получен запрос к эндпойнту: 'PUT /films'");
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
         } else {

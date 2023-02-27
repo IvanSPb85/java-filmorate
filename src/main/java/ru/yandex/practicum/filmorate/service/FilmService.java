@@ -23,10 +23,10 @@ public class FilmService {
         findFilm(filmId).getRating().add(userId);
     }
 
-    public void deleteLike(Long filmId, Long userId) {
+    public void deleteLike(Long filmId, Long userId) throws NoSuchElementException {
         Film film = findFilm(filmId);
         if (film.getRating().contains(userId)) film.getRating().remove(userId);
-        else throw new NoSuchElementException();
+        else throw new NoSuchElementException("userId: " + userId + " не найден.");
     }
 
     public List<Film> findPopularFilms(int count) {
