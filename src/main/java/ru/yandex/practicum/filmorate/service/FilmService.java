@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -30,11 +29,11 @@ public class FilmService {
     }
 
     public List<Film> findPopularFilms(int count) {
-        return storage.findAllFilms().stream()
-                .sorted(Comparator.comparing(film -> film.getRating().size())).limit(count).collect(Collectors.toList());
+        return storage.findAllFilms().stream().sorted((o1, o2) -> o2.getRating().size() - o1.getRating().size())
+                .limit(count).collect(Collectors.toList());
     }
 
-    private Film findFilm(Long filmId) throws NoSuchElementException {
+    public Film findFilm(Long filmId) throws NoSuchElementException {
         return storage.findAllFilms().stream().filter(u -> u.getId() == filmId).findFirst().get();
     }
 }

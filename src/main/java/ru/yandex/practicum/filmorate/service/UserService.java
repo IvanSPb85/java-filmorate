@@ -32,7 +32,6 @@ public class UserService {
     }
 
     public List<User> findCommonFriends(Long userId, Long otherId) {
-        List<User> commonFriends = new ArrayList<>();
         List<Long> commonIdFriends = new ArrayList<>(findUser(userId).getFriends());
         commonIdFriends.retainAll(findUser(otherId).getFriends());
         return findUsers(commonIdFriends);
@@ -50,7 +49,7 @@ public class UserService {
         return users;
     }
 
-    private User findUser(Long userId) throws NoSuchElementException {
+    public User findUser(Long userId) throws NoSuchElementException {
         return storage.findAllUsers().stream().filter(u -> u.getId() == userId).findFirst().get();
     }
 }
