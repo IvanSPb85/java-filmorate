@@ -12,7 +12,7 @@ import java.util.*;
 @Slf4j
 @Service
 public class UserService {
-    public final UserStorage storage;
+    private final UserStorage storage;
 
     @Autowired
     public UserService(InMemoryUserStorage storage) {
@@ -41,6 +41,18 @@ public class UserService {
 
     public List<User> findFriends(Long userId) {
         return findUsers(new ArrayList<>(findUser(userId).getFriends()));
+    }
+
+    public Collection<User> findAllUsers() {
+        return storage.findAllUsers();
+    }
+
+    public User createUser(User user) {
+        return storage.createUser(user);
+    }
+
+    public User updateUser(User user) {
+        return storage.updateUser(user);
     }
 
     private List<User> findUsers(List<Long> listId) {

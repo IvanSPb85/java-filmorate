@@ -19,21 +19,21 @@ public class FilmController {
     private final FilmService service;
 
     @GetMapping
-    public Collection<Film> findAllFilms() {
+    public ResponseEntity<Collection<Film>> findAllFilms() {
         log.info("Получен запрос к эндпойнту: 'GET /films'");
-        return service.storage.findAllFilms();
+        return new ResponseEntity<>(service.findAllFilms(), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         log.info("Получен запрос к эндпойнту: 'POST /films'");
-        return service.storage.createFilm(film);
+        return new ResponseEntity<>(service.createFilm(film), HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Film> updateFilm(@RequestBody Film film) {
         log.info("Получен запрос к эндпойнту: 'PUT /films'");
-        return service.storage.updateFilm(film);
+        return new ResponseEntity<>(service.updateFilm(film), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -55,9 +55,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> findPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
+    public ResponseEntity<List<Film>> findPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
         log.info("Получен запрос к эндпойнту: 'GET /films/popular?count={count}'");
-        return service.findPopularFilms(count);
+        return new ResponseEntity<>(service.findPopularFilms(count), HttpStatus.OK);
     }
 }
 

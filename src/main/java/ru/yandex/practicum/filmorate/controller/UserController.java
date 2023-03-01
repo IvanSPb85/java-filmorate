@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
@@ -18,27 +19,27 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    public Collection<User> findAllUsers() {
+    public ResponseEntity<Collection<User>> findAllUsers() {
         log.info("Получен запрос к эндпойнту: 'GET /users'");
-        return service.storage.findAllUsers();
+        return new ResponseEntity<>(service.findAllUsers(), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         log.info("Получен запрос к эндпойнту: 'POST /users'");
-        return service.storage.createUser(user);
+        return new ResponseEntity<>(service.createUser(user), HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         log.info("Получен запрос к эндпойнту: 'PUT /users'");
-        return service.storage.updateUser(user);
+        return new ResponseEntity<>(service.updateUser(user), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
         log.info("Получен запрос к эндпойнту: 'GET /users/{id}'");
-        return service.findUser(id);
+        return new ResponseEntity<>(service.findUser(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
@@ -54,14 +55,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriends(@PathVariable Long id) {
+    public ResponseEntity<List<User>> getFriends(@PathVariable Long id) {
         log.info("Получен запрос к эндпойнту: 'GET /users/{id}/friends'");
-        return service.findFriends(id);
+        return new ResponseEntity<>(service.findFriends(id), HttpStatus.OK);
     }
 
     @GetMapping("{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+    public ResponseEntity<List<User>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         log.info("Получен запрос к эндпойнту: 'GET /users/{id}/friends/common/{otherId}'");
-        return service.findCommonFriends(id, otherId);
+        return new ResponseEntity<>(service.findCommonFriends(id, otherId), HttpStatus.OK);
     }
 }

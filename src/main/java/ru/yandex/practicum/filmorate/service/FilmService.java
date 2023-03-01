@@ -6,13 +6,14 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    public final FilmStorage storage;
+    private final FilmStorage storage;
 
     @Autowired
     public FilmService(InMemoryFilmStorage storage) {
@@ -37,4 +38,18 @@ public class FilmService {
     public Film findFilm(Long filmId) throws NoSuchElementException {
         return storage.findAllFilms().stream().filter(u -> u.getId() == filmId).findFirst().get();
     }
+
+    public Collection<Film> findAllFilms() {
+        return storage.findAllFilms();
+    }
+
+    public Film createFilm(Film film) {
+        return storage.createFilm(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return storage.updateFilm(film);
+    }
 }
+
+
