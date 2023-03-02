@@ -1,67 +1,74 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+
+import static ru.yandex.practicum.filmorate.constant.Constant.*;
+
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-    private int counterId;
-    private final Map<Integer, User> users = new HashMap<>();
+    private final UserService service;
 
     @GetMapping
-    public Collection<User> findAllUsers() {
-        return users.values();
+    public ResponseEntity<Collection<User>> findAllUsers(HttpServletRequest request) {
+        log.info(REQUEST_GET_LOG, request.getRequestURI());
+        return new ResponseEntity<>(service.findAllUsers(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        log.info("Получен запрос к эндпойнту: 'POST /users'");
-        try {
-            isValid(user);
-        } catch (ValidationException e) {
-            log.warn("Пользователь не прошёл валидацию по причине: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(user);
-        }
-        getNextId();
-        user.setId(counterId);
-        users.put(counterId, user);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<User> createUser(@RequestBody User user, HttpServletRequest request) {
+        log.info(REQUEST_POST_LOG, request.getRequestURI());
+        return new ResponseEntity<>(service.createUser(user), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-        log.info("Получен запрос к эндпойнту: 'PUT /users'");
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-        } else {
-            log.warn("Данный пользователь не найден!");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
-        }
-        return ResponseEntity.ok(user);
+    public ResponseEntity<User> updateUser(@RequestBody User user, HttpServletRequest request) {
+        log.info(REQUEST_PUT_LOG, request.getRequestURI());
+        return new ResponseEntity<>(service.updateUser(user), HttpStatus.OK);
     }
 
-    private void getNextId() {
-        counterId++;
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id, HttpServletRequest request) {
+        log.info(REQUEST_GET_LOG, request.getRequestURI());
+        return new ResponseEntity<>(service.findUser(id), HttpStatus.OK);
     }
 
-    public void isValid(User user) throws ValidationException {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@"))
-            throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().split(" ").length > 1)
-            throw new ValidationException("логин не может быть пустым и содержать пробелы");
-        if (user.getName() == null || user.getName().isBlank()) user.setName(user.getLogin());
-        if (user.getBirthday().isAfter(LocalDate.now()))
-            throw new ValidationException("дата рождения не может быть в будущем");
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId,
+                          HttpServletRequest request) {
+        log.info(REQUEST_PUT_LOG, request.getRequestURI());
+        service.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId, HttpServletRequest request) {
+        log.info(REQUEST_DELETE_LOG, request.getRequestURI());
+        service.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<List<User>> getFriends(@PathVariable Long id, HttpServletRequest request) {
+        log.info(REQUEST_GET_LOG, request.getRequestURI());
+        return new ResponseEntity<>(service.findFriends(id), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/friends/common/{otherId}")
+    public ResponseEntity<List<User>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId,
+                                                       HttpServletRequest request) {
+        log.info(REQUEST_GET_LOG, request.getRequestURI());
+        return new ResponseEntity<>(service.findCommonFriends(id, otherId), HttpStatus.OK);
     }
 }

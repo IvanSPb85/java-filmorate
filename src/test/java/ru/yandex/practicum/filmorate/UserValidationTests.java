@@ -2,17 +2,17 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validator.UserValidation;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class UserControllerTests {
-    UserController controller = new UserController();
+public class UserValidationTests {
+    UserValidation validation = new UserValidation();
     User user;
 
     @BeforeEach
@@ -27,14 +27,14 @@ public class UserControllerTests {
 
     @Test
     public void isValidUserNotThrowValidateExceptionTest() {
-        controller.isValid(user);
+        validation.isValid(user);
     }
 
     @Test
     public void isValidUserEmailFailThrowValidateExceptionTest() {
         user.setEmail("email");
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(user));
+                () -> validation.isValid(user));
         assertEquals("электронная почта не может быть пустой и должна содержать символ @", exception.getMessage());
     }
 
@@ -42,7 +42,7 @@ public class UserControllerTests {
     public void isValidUserEmailNullThrowValidateExceptionTest() {
         user.setEmail(null);
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(user));
+                () -> validation.isValid(user));
         assertEquals("электронная почта не может быть пустой и должна содержать символ @", exception.getMessage());
     }
 
@@ -50,7 +50,7 @@ public class UserControllerTests {
     public void isValidUserEmailEmptyThrowValidateExceptionTest() {
         user.setEmail(" ");
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(user));
+                () -> validation.isValid(user));
         assertEquals("электронная почта не может быть пустой и должна содержать символ @", exception.getMessage());
     }
 
@@ -58,7 +58,7 @@ public class UserControllerTests {
     public void isValidUserLoginNullThrowValidateExceptionTest() {
         user.setLogin(null);
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(user));
+                () -> validation.isValid(user));
         assertEquals("логин не может быть пустым и содержать пробелы", exception.getMessage());
     }
 
@@ -66,7 +66,7 @@ public class UserControllerTests {
     public void isValidUserLoginEmptyThrowValidateExceptionTest() {
         user.setLogin(" ");
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(user));
+                () -> validation.isValid(user));
         assertEquals("логин не может быть пустым и содержать пробелы", exception.getMessage());
     }
 
@@ -74,14 +74,14 @@ public class UserControllerTests {
     public void isValidUserLoginFailThrowValidateExceptionTest() {
         user.setLogin("login login");
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(user));
+                () -> validation.isValid(user));
         assertEquals("логин не может быть пустым и содержать пробелы", exception.getMessage());
     }
 
     @Test
     public void isValidUserNameEmptyThrowValidateExceptionTest() {
         user.setName(" ");
-        controller.isValid(user);
+        validation.isValid(user);
         assertEquals("login", user.getName(),
                 "при пустом имени должен использоваться логин");
     }
@@ -89,7 +89,7 @@ public class UserControllerTests {
     @Test
     public void isValidUserNameNullThrowValidateExceptionTest() {
         user.setName(null);
-        controller.isValid(user);
+        validation.isValid(user);
         assertEquals("login", user.getName(),
                 "при пустом имени должен использоваться логин");
     }
@@ -98,7 +98,7 @@ public class UserControllerTests {
     public void isValidUserFailBirthdayThrowValidateExceptionTest() {
         user.setBirthday(LocalDate.now().plusDays(1));
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> controller.isValid(user));
+                () -> validation.isValid(user));
         assertEquals("дата рождения не может быть в будущем", exception.getMessage());
     }
 }
