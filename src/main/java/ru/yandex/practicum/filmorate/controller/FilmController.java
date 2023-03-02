@@ -8,6 +8,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static ru.yandex.practicum.filmorate.constant.Constant.*;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -19,44 +23,45 @@ public class FilmController {
     private final FilmService service;
 
     @GetMapping
-    public ResponseEntity<Collection<Film>> findAllFilms() {
-        log.info("Получен запрос к эндпойнту: 'GET /films'");
+    public ResponseEntity<Collection<Film>> findAllFilms(HttpServletRequest request) {
+        log.info(REQUEST_GET_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.findAllFilms(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Film> createFilm(@RequestBody Film film) {
-        log.info("Получен запрос к эндпойнту: 'POST /films'");
+    public ResponseEntity<Film> createFilm(@RequestBody Film film, HttpServletRequest request) {
+        log.info(REQUEST_POST_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.createFilm(film), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateFilm(@RequestBody Film film) {
-        log.info("Получен запрос к эндпойнту: 'PUT /films'");
+    public ResponseEntity<Film> updateFilm(@RequestBody Film film, HttpServletRequest request) {
+        log.info(REQUEST_PUT_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.updateFilm(film), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Film> getFilm(@PathVariable("id") Long id) {
-        log.info("Получен запрос к эндпойнту: 'GET /films/{id}'");
+    public ResponseEntity<Film> getFilm(@PathVariable("id") Long id, HttpServletRequest request) {
+        log.info(REQUEST_GET_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.findFilm(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Получен запрос к эндпойнту: 'PUT /films/{id}/like/{userId}'");
+    public void addLike(@PathVariable Long id, @PathVariable Long userId, HttpServletRequest request) {
+        log.info(REQUEST_PUT_LOG, request.getRequestURI());
         service.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Получен запрос к эндпойнту: 'DELETE /films/{id}/like/{userId}'");
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId, HttpServletRequest request) {
+        log.info(REQUEST_DELETE_LOG, request.getRequestURI());
         service.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<Film>> findPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
-        log.info("Получен запрос к эндпойнту: 'GET /films/popular?count={count}'");
+    public ResponseEntity<List<Film>> findPopularFilms(@RequestParam(defaultValue = "10") Integer count,
+                                                       HttpServletRequest request) {
+        log.info(REQUEST_GET_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.findPopularFilms(count), HttpStatus.OK);
     }
 }
