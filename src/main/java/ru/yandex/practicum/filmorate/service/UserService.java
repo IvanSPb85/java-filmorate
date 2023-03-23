@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -15,32 +15,24 @@ public class UserService {
     private final UserStorage storage;
 
     @Autowired
-    public UserService(InMemoryUserStorage storage) {
+    public UserService(@Qualifier("inMemoryUserStorage") UserStorage storage) {
         this.storage = storage;
     }
 
     public void addFriend(Long userId, Long friendId) {
-        User user = findUser(userId);
-        User friend = findUser(friendId);
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        storage.addFriend(userId, friendId);
     }
 
     public void deleteFriend(Long userId, Long friendId) {
-        User user = findUser(userId);
-        User friend = findUser(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
+        storage.deleteFriend(userId, friendId);
     }
 
     public List<User> findCommonFriends(Long userId, Long otherId) {
-        List<Long> commonIdFriends = new ArrayList<>(findUser(userId).getFriends());
-        commonIdFriends.retainAll(findUser(otherId).getFriends());
-        return findUsers(commonIdFriends);
+        return storage.getCommonFriends(userId, otherId);
     }
 
     public List<User> findFriends(Long userId) {
-        return findUsers(new ArrayList<>(findUser(userId).getFriends()));
+        return storage.getFriends(userId);
     }
 
     public Collection<User> findAllUsers() {
@@ -55,15 +47,8 @@ public class UserService {
         return storage.updateUser(user);
     }
 
-    private List<User> findUsers(List<Long> listId) {
-        List<User> users = new ArrayList<>();
-        for (Long id : listId) {
-            users.add(findUser(id));
-        }
-        return users;
-    }
 
     public User findUser(Long userId) throws NoSuchElementException {
-        return storage.findAllUsers().stream().filter(u -> u.getId() == userId).findFirst().get();
+        return storage.getUser(userId);
     }
 }
