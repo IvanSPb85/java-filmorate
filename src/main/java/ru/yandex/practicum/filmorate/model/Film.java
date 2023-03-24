@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -17,5 +18,5 @@ public class Film {
     private LocalDate releaseDate;
     private int duration;
     private Category category;
-    private Set<Genre> genres;
+    private List<Genre> genres;
 }
