@@ -15,7 +15,7 @@ public class FilmService {
     private final FilmStorage storage;
 
     @Autowired
-    public FilmService(@Qualifier("inMemoryFilmStorage") FilmStorage storage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage) {
         this.storage = storage;
     }
 

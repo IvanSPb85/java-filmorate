@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User createUser(User user) {
         String sqlQuery = "";
-        return  null;
+        return null;
     }
 
     @Override
@@ -60,4 +62,6 @@ public class UserDbStorage implements UserStorage {
     public List<User> getCommonFriends(Long userId, Long friendId) {
         return null;
     }
+
+
 }

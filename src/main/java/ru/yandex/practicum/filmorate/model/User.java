@@ -17,6 +17,5 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private Map<Integer, Boolean> friendStatus;
-
+    private Map<Long, Boolean> friendStatus;
 }
