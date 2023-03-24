@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.dao;
 
 import ru.yandex.practicum.filmorate.model.Category;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface CategoryDao {
-    Category findCategoryById();
+    Category findCategoryById(int categoryId);
 
-    Collection<Category> findAllCategory();
+    List<Category> findAllCategory();
 }
