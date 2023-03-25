@@ -9,7 +9,7 @@ public interface FriendsDao {
 
     void deleteFriend(Long userId, Long friendId);
 
-    List<User> findAllFriends(Long userId);
+    List<Long> findAllFriends(Long userId);
 
-    List<User> findCommonFriends(Long userId, Long friendId);
+    List<Long> findCommonFriends(Long userId, Long friendId);
 }
