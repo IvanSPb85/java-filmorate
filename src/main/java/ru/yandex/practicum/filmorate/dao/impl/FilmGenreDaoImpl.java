@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
 
@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
 public class FilmGenreDaoImpl implements FilmGenreDao {
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public FilmGenreDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -20,8 +21,8 @@ public class FilmGenreDaoImpl implements FilmGenreDao {
     }
 
     @Override
-    public void deleteGenreByFilm(int genreId, Long filmId) {
-        String sql = "DELETE FROM film_genre WHERE genre_id = ? AND film_id = ?";
-        jdbcTemplate.update(sql, genreId, filmId);
+    public void deleteGenreByFilm(Long filmId) {
+        String sql = "DELETE FROM film_genre WHERE film_id = ?";
+        jdbcTemplate.update(sql, filmId);
     }
 }

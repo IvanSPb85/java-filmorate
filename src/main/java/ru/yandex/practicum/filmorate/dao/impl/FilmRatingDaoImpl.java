@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRatingDao;
@@ -11,6 +12,7 @@ import java.util.TreeSet;
 public class FilmRatingDaoImpl implements FilmRatingDao {
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public FilmRatingDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -29,7 +31,7 @@ public class FilmRatingDaoImpl implements FilmRatingDao {
 
     @Override
     public void deleteLike(Long filmId, Long userId) {
-        String sql = "DELETE FROM film_rating WHERE film_id = ? AND user_id = ?";
+        String sql = "DELETE FROM film_rating WHERE (film_id = ? AND user_id = ?)";
         jdbcTemplate.update(sql, filmId, userId);
     }
 }

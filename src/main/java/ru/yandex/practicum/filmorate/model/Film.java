@@ -12,11 +12,11 @@ import java.util.TreeSet;
 @Builder
 public class Film {
     private final Set<Long> rating = new TreeSet<>();
-    private int id;
+    private Long id;
     private String name;
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    private Category category;
+    private Mpa mpa;
     private List<Genre> genres;
 }

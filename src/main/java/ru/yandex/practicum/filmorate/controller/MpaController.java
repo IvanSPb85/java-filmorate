@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Category;
-import ru.yandex.practicum.filmorate.service.CategoryService;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -20,18 +20,18 @@ import static ru.yandex.practicum.filmorate.constant.Constant.REQUEST_GET_LOG;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/mpa")
-public class CategoryController {
+public class MpaController {
 
-    private final CategoryService service;
+    private final MpaService service;
 
     @GetMapping
-    public ResponseEntity<List<Category>> findAllCategory(HttpServletRequest request) {
+    public ResponseEntity<List<Mpa>> findAllMpa(HttpServletRequest request) {
         log.info(REQUEST_GET_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.findAllCategory(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> findCategoryById(@PathVariable Integer id, HttpServletRequest request) {
+    public ResponseEntity<Mpa> findMpaById(@PathVariable Integer id, HttpServletRequest request) {
         log.info(REQUEST_GET_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.findCategoryById(id), HttpStatus.OK);
     }

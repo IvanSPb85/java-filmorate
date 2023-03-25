@@ -1,3 +1,4 @@
+
 MERGE INTO genre (genre_id, name)
     VALUES (1, 'Комедия'),
            (2, 'Драма'),
@@ -6,7 +7,7 @@ MERGE INTO genre (genre_id, name)
            (5, 'Документальный'),
            (6, 'Боевик');
 
-MERGE INTO category (category_id, name)
+MERGE INTO mpa (mpa_id, name)
     VALUES (1, 'G'),
            (2, 'PG'),
            (3, 'PG-13'),

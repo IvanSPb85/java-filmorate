@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
     private final FilmValidation validation;
-    private int counterId;
-    private final Map<Integer, Film> films = new HashMap<>();
+    private Long counterId;
+    private final Map<Long, Film> films = new HashMap<>();
 
     @Override
     public Collection<Film> findAllFilms() {
@@ -41,7 +41,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Long filmId) throws NoSuchElementException {
-        return findAllFilms().stream().filter(u -> u.getId() == filmId).findFirst().get();
+        return findAllFilms().stream().filter(u -> u.getId().equals(filmId)).findFirst().get();
     }
 
     @Override

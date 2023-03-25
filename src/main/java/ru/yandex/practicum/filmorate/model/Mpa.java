@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Data
 @Builder
-public class Category {
+public class Mpa {
     private int id;
     private String name;
 }
