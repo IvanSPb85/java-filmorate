@@ -2,9 +2,10 @@ package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
 
-@Component
+@Repository
 public class FilmGenreDaoImpl implements FilmGenreDao {
     private final JdbcTemplate jdbcTemplate;
 
@@ -14,7 +15,7 @@ public class FilmGenreDaoImpl implements FilmGenreDao {
 
     @Override
     public void addGenreToFilm(int genreId, Long filmId) {
-        String sql = "INSERT INTO film_genre(genre_id, film_id VALUES(?, ?)";
+        String sql = "INSERT INTO film_genre(genre_id, film_id) VALUES(?, ?)";
         jdbcTemplate.update(sql, genreId, filmId);
     }
 

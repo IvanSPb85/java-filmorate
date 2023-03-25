@@ -5,7 +5,7 @@ import java.util.Set;
 public interface FilmRatingDao {
     Set<Long> findRatingByFilm(Long filmId);
 
-    Long addLike(Long filmId, Long userID);
+    void addLike(Long filmId, Long userID);
 
-    Long deleteLike(Long filmId, Long userId);
+    void deleteLike(Long filmId, Long userId);
 }
