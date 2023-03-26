@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.dao.FilmRatingDao;
 @Repository
 public class FilmRatingDaoImpl implements FilmRatingDao {
     private final JdbcTemplate jdbcTemplate;
+    private final static String ADD_LIKE = "INSERT INTO film_rating(film_id, user_id) VALUES(?, ?)";
+    private final static String DELETE_LIKE = "DELETE FROM film_rating WHERE (film_id = ? AND user_id = ?)";
 
     @Autowired
     public FilmRatingDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -16,13 +18,11 @@ public class FilmRatingDaoImpl implements FilmRatingDao {
 
     @Override
     public void addLike(Long filmId, Long userID) {
-        String sql = "INSERT INTO film_rating(film_id, user_id) VALUES(?, ?)";
-        jdbcTemplate.update(sql, filmId, userID);
+        jdbcTemplate.update(ADD_LIKE, filmId, userID);
     }
 
     @Override
     public void deleteLike(Long filmId, Long userId) {
-        String sql = "DELETE FROM film_rating WHERE (film_id = ? AND user_id = ?)";
-        jdbcTemplate.update(sql, filmId, userId);
+        jdbcTemplate.update(DELETE_LIKE, filmId, userId);
     }
 }

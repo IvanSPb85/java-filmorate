@@ -15,6 +15,10 @@ import java.util.NoSuchElementException;
 @Repository
 public class GenreDaoImpl implements GenreDao {
     private final JdbcTemplate jdbcTemplate;
+    private final static String FIND_GENRE_BY_ID = "SELECT * FROM genre WHERE genre_id = ?";
+    private final static String FIND_ALL_GENRES = "SELECT * FROM genre";
+    private final static String FIND_GENRE_BY_FILM = "SELECT * FROM genre WHERE genre_id IN (" +
+            "SELECT genre_id FROM film_genre WHERE film_id = ?)";
 
     @Autowired
     public GenreDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -23,8 +27,7 @@ public class GenreDaoImpl implements GenreDao {
 
     @Override
     public Genre findGenreById(int genreId) {
-        String sql = "SELECT * FROM genre WHERE genre_id = ?";
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, genreId);
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(FIND_GENRE_BY_ID, genreId);
         if (!sqlRowSet.next()) {
             throw new NoSuchElementException("genreId: " + genreId + " не найден.");
         }
@@ -36,15 +39,12 @@ public class GenreDaoImpl implements GenreDao {
 
     @Override
     public List<Genre> findAllGenres() {
-        String sql = "SELECT * FROM genre";
-        return jdbcTemplate.query(sql, this::mapRowToGenre);
+        return jdbcTemplate.query(FIND_ALL_GENRES, this::mapRowToGenre);
     }
 
     @Override
     public List<Genre> findGenresByFilm(Long filmId) {
-        String sql = "SELECT * FROM genre WHERE genre_id IN (SELECT genre_id FROM film_genre WHERE film_id = " +
-                filmId + ")";
-        return jdbcTemplate.query(sql, this::mapRowToGenre);
+        return jdbcTemplate.query(FIND_GENRE_BY_FILM, this::mapRowToGenre, filmId);
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rawNum) throws SQLException {

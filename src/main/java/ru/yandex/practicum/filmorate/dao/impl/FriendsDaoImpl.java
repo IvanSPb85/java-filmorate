@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.dao.FriendsDao;
 @Repository
 public class FriendsDaoImpl implements FriendsDao {
     private final JdbcTemplate jdbcTemplate;
+    private final static String ADD_FRIEND = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
+    private final static String DELETE_FRIEND = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
 
     @Autowired
     public FriendsDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -16,13 +18,11 @@ public class FriendsDaoImpl implements FriendsDao {
 
     @Override
     public void addFriend(Long userId, Long friendId) {
-        String sql = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
-        jdbcTemplate.update(sql, userId, friendId);
+        jdbcTemplate.update(ADD_FRIEND, userId, friendId);
     }
 
     @Override
     public void deleteFriend(Long userId, Long friendId) {
-        String sql = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sql, userId, friendId);
+        jdbcTemplate.update(DELETE_FRIEND, userId, friendId);
     }
 }

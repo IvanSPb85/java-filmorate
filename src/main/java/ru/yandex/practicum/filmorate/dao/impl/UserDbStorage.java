@@ -23,6 +23,17 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserValidation validation;
     private final FriendsDao friendsDao;
+    private final static String FIND_ALL_USERS = "SELECT * FROM users";
+    private final static String CREATE_USER = "INSERT INTO users(email, login, name, birthday) VALUES(?, ?, ?, ?)";
+    private final static String UPDATE_USER = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ?" +
+            " WHERE user_id = ?";
+    private final static String GET_USER = "SELECT * FROM users WHERE user_id = ?";
+    private final static String GET_FRIENDS = "SELECT * FROM users AS u " +
+            "INNER JOIN friends AS f ON u.user_id = f.friend_id WHERE f.user_id = ?";
+    private final static String GET_COMMON_FRIENDS = "SELECT * FROM users AS u WHERE u.user_id IN (" +
+            "SELECT friend_id FROM friends WHERE user_id = ?) " +
+            "AND u.user_id IN (SELECT friend_id FROM friends WHERE user_id = ?)";
+    private final static String EXISTS_USER = "SELECT COUNT(*) FROM users WHERE user_id = ?";
 
     @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate, UserValidation validation, FriendsDao friendsDao) {
@@ -33,19 +44,17 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> findAllUsers() {
-        String sql = "SELECT * FROM users";
-        return jdbcTemplate.query(sql, this::mapRowToUser);
+        return jdbcTemplate.query(FIND_ALL_USERS, this::mapRowToUser);
     }
 
     @Override
     public User createUser(User user) {
         validation.isValid(user);
-        String sqlQuery = "INSERT INTO users(email, login, name, birthday) VALUES(?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"user_id"});
+            PreparedStatement stmt = connection.prepareStatement(CREATE_USER, new String[]{"user_id"});
             stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getLogin());
             stmt.setString(3, user.getName());
@@ -61,16 +70,14 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User updateUser(User user) {
         existsUser(user.getId());
-        String sql = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
-        jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        jdbcTemplate.update(UPDATE_USER, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return getUser(user.getId());
     }
 
     @Override
     public User getUser(Long userId) {
         existsUser(userId);
-        String sql = "SELECT * FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(sql, this::mapRowToUser, userId);
+        return jdbcTemplate.queryForObject(GET_USER, this::mapRowToUser, userId);
     }
 
     @Override
@@ -89,17 +96,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getFriends(Long userId) {
-        String sql = "SELECT * FROM users AS u " +
-                "INNER JOIN friends AS f ON u.user_id = f.friend_id WHERE f.user_id = " + userId;
-        return jdbcTemplate.query(sql, this::mapRowToUser);
+        return jdbcTemplate.query(GET_FRIENDS, this::mapRowToUser, userId);
     }
 
     @Override
     public List<User> getCommonFriends(Long userId, Long friendId) {
-        String sql = "SELECT * FROM users AS u WHERE u.user_id IN (" +
-                "SELECT friend_id FROM friends WHERE user_id = " + userId +
-                ") AND u.user_id IN (SELECT friend_id FROM friends WHERE user_id = " + friendId + ")";
-        return jdbcTemplate.query(sql, this::mapRowToUser);
+        return jdbcTemplate.query(GET_COMMON_FRIENDS, this::mapRowToUser, userId, friendId);
     }
 
     private User mapRowToUser(ResultSet rs, int rawNum) throws SQLException {
@@ -112,8 +114,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     private boolean existsUser(long userID) {
-        String sql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
-        int result = jdbcTemplate.queryForObject(sql, Integer.class, userID);
+        int result = jdbcTemplate.queryForObject(EXISTS_USER, Integer.class, userID);
         if (result != 1) {
             throw new NoSuchElementException("В базе не найден пользователь с Id = " + userID);
         }

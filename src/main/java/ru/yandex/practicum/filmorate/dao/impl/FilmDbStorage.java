@@ -30,6 +30,18 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaDao mpaDao;
     private final FilmValidation validation;
     private final GenreDao genreDao;
+    private final static String FIND_ALL_FILMS = "SELECT * FROM films";
+    private final static String CREATE_FILM = "INSERT INTO films(name, description, release_date, duration, mpa_id)" +
+            " VALUES (?, ?, ?, ?, ?)";
+    private final static String UPDATE_FILM = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
+            "duration = ?, mpa_id = ? WHERE film_id = ?";
+    private final static String GET_FILM = "SELECT * FROM films WHERE film_id = ?";
+    private final static String FIND_POPULAR_FILM = "SELECT * FROM films AS f " +
+            "LEFT OUTER JOIN film_rating AS fr ON f.film_id = fr.film_id " +
+            "GROUP BY f.film_id ORDER BY COUNT(fr.user_id) DESC LIMIT ?";
+    private final static String EXISTS_FILM = "SELECT COUNT(*) FROM films WHERE film_id = ?";
+    private final static String EXISTS_GENRE = "SELECT COUNT(*) FROM film_genre WHERE (genre_id = ? AND film_id = ?)";
+    private final static String EXISTS_USER = "SELECT COUNT(*) FROM users WHERE user_id = ?";
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmGenreDao filmGenreDao,
@@ -44,19 +56,17 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAllFilms() {
-        String sql = "SELECT * FROM films";
-        return jdbcTemplate.query(sql, this::mapRowToFilm);
+        return jdbcTemplate.query(FIND_ALL_FILMS, this::mapRowToFilm);
     }
 
     @Override
     public Film createFilm(Film film) {
         validation.isValid(film);
-        String sql = "INSERT INTO films(name, description, release_date, duration, mpa_id) VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"film_id"});
+            PreparedStatement stmt = connection.prepareStatement(CREATE_FILM, new String[]{"film_id"});
             stmt.setString(1, film.getName());
             stmt.setString(2, film.getDescription());
             stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
@@ -79,9 +89,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         existsFilm(film.getId());
-        String sql = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
-                "duration = ?, mpa_id = ? WHERE film_id = ?";
-        jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
+        jdbcTemplate.update(UPDATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
         filmGenreDao.deleteGenreByFilm(film.getId());
 
@@ -98,8 +106,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilm(Long filmId) {
         existsFilm(filmId);
-        String sql = "SELECT * FROM films WHERE film_id = ?";
-        return jdbcTemplate.queryForObject(sql, this::mapRowToFilm, filmId);
+        return jdbcTemplate.queryForObject(GET_FILM, this::mapRowToFilm, filmId);
     }
 
     @Override
@@ -117,9 +124,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findPopularFilms(Integer count) {
-        String sql = "SELECT * FROM films AS f LEFT OUTER JOIN film_rating AS fr ON f.film_id = fr.film_id " +
-                "GROUP BY f.film_id ORDER BY COUNT(fr.user_id) DESC LIMIT " + count;
-        return jdbcTemplate.query(sql, this::mapRowToFilm);
+        return jdbcTemplate.query(FIND_POPULAR_FILM, this::mapRowToFilm, count);
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rawNum) throws SQLException {
@@ -135,8 +140,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private boolean existsFilm(long filmId) {
-        String sqlQuery = "SELECT COUNT(*) FROM films WHERE film_id = ?";
-        int result = jdbcTemplate.queryForObject(sqlQuery, Integer.class, filmId);
+        int result = jdbcTemplate.queryForObject(EXISTS_FILM, Integer.class, filmId);
         if (result != 1) {
             throw new NoSuchElementException("В базе не обнаружен фильм с film_id = " + filmId);
         }
@@ -144,13 +148,11 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private boolean existsGenre(Integer genreId, Long filmId) {
-        String sqlQuery = "SELECT COUNT(*) FROM film_genre WHERE (genre_id = ? AND film_id = ?)";
-        return jdbcTemplate.queryForObject(sqlQuery, Integer.class, genreId, filmId) == 1;
+        return jdbcTemplate.queryForObject(EXISTS_GENRE, Integer.class, genreId, filmId) == 1;
     }
 
     private boolean existsUser(long userID) {
-        String sql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
-        int result = jdbcTemplate.queryForObject(sql, Integer.class, userID);
+        int result = jdbcTemplate.queryForObject(EXISTS_USER, Integer.class, userID);
         if (result != 1) {
             throw new NoSuchElementException("В базе не найден пользователь с Id = " + userID);
         }

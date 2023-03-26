@@ -15,6 +15,8 @@ import java.util.NoSuchElementException;
 @Repository
 public class MpaDaoImpl implements MpaDao {
     private final JdbcTemplate jdbcTemplate;
+    private final static String FIND_MPA_BY_ID = "SELECT * FROM mpa WHERE mpa_id = ?";
+    private final static String FIND_ALL_MPA = "SELECT * FROM mpa";
 
     @Autowired
     public MpaDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -23,8 +25,7 @@ public class MpaDaoImpl implements MpaDao {
 
     @Override
     public Mpa findMpaById(int mpaId) {
-        String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, mpaId);
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(FIND_MPA_BY_ID, mpaId);
         if (!sqlRowSet.next()) {
             throw new NoSuchElementException("mpaId: " + mpaId + " не найден.");
         }
@@ -36,8 +37,7 @@ public class MpaDaoImpl implements MpaDao {
 
     @Override
     public List<Mpa> findAllMpa() {
-        String sql = "SELECT * FROM mpa";
-        return jdbcTemplate.query(sql, this::mapRowToMpa);
+        return jdbcTemplate.query(FIND_ALL_MPA, this::mapRowToMpa);
     }
 
     private Mpa mapRowToMpa(ResultSet resultSet, int rawNum) throws SQLException {
