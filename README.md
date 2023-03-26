@@ -17,12 +17,12 @@
 _Получение списка всех фильмов_
 ```
 SELECT *
-FROM film;
+FROM films;
 ```
 _Получение списка всех пользователей_
 ```
 SELECT *
-FROM user;
+FROM users;
 ```
 
 
