@@ -5,9 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmRatingDao;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 @Repository
 public class FilmRatingDaoImpl implements FilmRatingDao {
     private final JdbcTemplate jdbcTemplate;
@@ -15,12 +12,6 @@ public class FilmRatingDaoImpl implements FilmRatingDao {
     @Autowired
     public FilmRatingDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public Set<Long> findRatingByFilm(Long filmId) {
-        String sql = "SELECT user_id FROM film_rating WHERE film_id = ?";
-        return new TreeSet<>(jdbcTemplate.query(sql, (rs, rawNum) -> (rs.getLong("user_id")), filmId)) ;
     }
 
     @Override

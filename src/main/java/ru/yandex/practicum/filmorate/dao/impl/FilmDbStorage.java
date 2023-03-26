@@ -122,7 +122,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findPopularFilms(Integer count) {
-        return null;
+        String sql = "SELECT * FROM films AS f LEFT OUTER JOIN film_rating AS fr ON f.film_id = fr.film_id " +
+                "GROUP BY f.film_id ORDER BY COUNT(fr.user_id) DESC LIMIT " + count;
+        return jdbcTemplate.query(sql, this::mapRowToFilm);
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rawNum) throws SQLException {
