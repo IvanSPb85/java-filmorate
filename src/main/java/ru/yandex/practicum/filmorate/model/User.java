@@ -12,7 +12,7 @@ import java.util.TreeSet;
 @Builder
 public class User {
     private final Set<Long> friends = new TreeSet<>();
-    private int id;
+    private Long id;
     private String email;
     private String login;
     private String name;

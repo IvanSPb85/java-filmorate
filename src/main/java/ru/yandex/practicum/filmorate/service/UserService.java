@@ -47,7 +47,6 @@ public class UserService {
         return storage.updateUser(user);
     }
 
-
     public User findUser(Long userId) throws NoSuchElementException {
         return storage.getUser(userId);
     }

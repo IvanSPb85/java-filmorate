@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS film_genre (
 CREATE TABLE IF NOT EXISTS friends (
     user_id INT NOT NULL REFERENCES users (user_id),
     friend_id INT NOT NULL REFERENCES users (user_id),
-    approved BOOLEAN NOT NULL,
     PRIMARY KEY(user_id, friend_id));
 
 

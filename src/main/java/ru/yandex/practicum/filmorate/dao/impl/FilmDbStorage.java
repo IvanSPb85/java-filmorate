@@ -78,9 +78,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if (!existsFilm(film.getId())) {
-            throw new NoSuchElementException("В базе не найден фильм с Id = " + film.getId());
-        }
+        existsFilm(film.getId());
         String sql = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
                 "duration = ?, mpa_id = ? WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
@@ -99,24 +97,21 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Long filmId) {
-        if (!existsFilm(filmId)) {
-            throw new NoSuchElementException("В базе не обнаружен филь с film_id = " + filmId);
-        }
+        existsFilm(filmId);
         String sql = "SELECT * FROM films WHERE film_id = ?";
         return jdbcTemplate.queryForObject(sql, this::mapRowToFilm, filmId);
     }
 
     @Override
     public void addLike(Long id, Long userId) {
+        existsUser(userId);
         filmRatingDao.addLike(id, userId);
-
     }
 
     @Override
     public void deleteLike(Long id, Long userId) {
-        if (!existsFilm(userId)) {
-            throw new NoSuchElementException("Пользователь с userId = " + userId + " не найден в базе.");
-        }
+        existsUser(userId);
+        existsFilm(id);
         filmRatingDao.deleteLike(id, userId);
     }
 
@@ -142,11 +137,23 @@ public class FilmDbStorage implements FilmStorage {
     private boolean existsFilm(long filmId) {
         String sqlQuery = "SELECT COUNT(*) FROM films WHERE film_id = ?";
         int result = jdbcTemplate.queryForObject(sqlQuery, Integer.class, filmId);
-        return result == 1;
+        if (result != 1) {
+            throw new NoSuchElementException("В базе не обнаружен фильм с film_id = " + filmId);
+        }
+        return true;
     }
 
     private boolean existsGenre(Integer genreId, Long filmId) {
         String sqlQuery = "SELECT COUNT(*) FROM film_genre WHERE (genre_id = ? AND film_id = ?)";
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class, genreId, filmId) == 1;
+    }
+
+    private boolean existsUser(long userID) {
+        String sql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, userID);
+        if (result != 1) {
+            throw new NoSuchElementException("В базе не найден пользователь с Id = " + userID);
+        }
+        return true;
     }
 }

@@ -13,8 +13,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
     private final UserValidation validation;
-    private int counterId;
-    private final Map<Integer, User> users = new HashMap<>();
+    private Long counterId;
+    private final Map<Long, User> users = new HashMap<>();
 
     @Override
     public Collection<User> findAllUsers() {
