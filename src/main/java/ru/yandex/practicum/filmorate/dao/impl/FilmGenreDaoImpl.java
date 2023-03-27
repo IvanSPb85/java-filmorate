@@ -8,8 +8,8 @@ import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
 @Repository
 public class FilmGenreDaoImpl implements FilmGenreDao {
     private final JdbcTemplate jdbcTemplate;
-    private final static String ADD_GENRE_TO_FILM = "INSERT INTO film_genre(genre_id, film_id) VALUES(?, ?)";
-    private final static String DELETE_GENRE_BY_FILM = "DELETE FROM film_genre WHERE film_id = ?";
+    private static final String ADD_GENRE_TO_FILM = "INSERT INTO film_genre(genre_id, film_id) VALUES(?, ?)";
+    private static final String DELETE_GENRE_BY_FILM = "DELETE FROM film_genre WHERE film_id = ?";
 
     @Autowired
     public FilmGenreDaoImpl(JdbcTemplate jdbcTemplate) {

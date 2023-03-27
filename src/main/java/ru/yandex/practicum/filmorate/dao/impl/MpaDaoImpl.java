@@ -14,10 +14,10 @@ import java.util.NoSuchElementException;
 @Repository
 public class MpaDaoImpl implements MpaDao {
     private final JdbcTemplate jdbcTemplate;
-    private final static String FIND_MPA_BY_ID = "SELECT * FROM mpa WHERE mpa_id = ?";
-    private final static String FIND_ALL_MPA = "SELECT * FROM mpa";
+    private static final String FIND_MPA_BY_ID = "SELECT * FROM mpa WHERE mpa_id = ?";
+    private static final String FIND_ALL_MPA = "SELECT * FROM mpa";
 
-    private final static String EXISTS_MPA = "SELECT COUNT(*) FROM mpa WHERE mpa_id = ?";
+    private static final String EXISTS_MPA = "SELECT COUNT(*) FROM mpa WHERE mpa_id = ?";
 
     @Autowired
     public MpaDaoImpl(JdbcTemplate jdbcTemplate) {

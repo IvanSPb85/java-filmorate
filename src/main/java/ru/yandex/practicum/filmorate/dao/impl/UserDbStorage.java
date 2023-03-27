@@ -21,17 +21,17 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserValidation validation;
     private final FriendsDao friendsDao;
-    private final static String FIND_ALL_USERS = "SELECT * FROM users";
-    private final static String CREATE_USER = "INSERT INTO users(email, login, name, birthday) VALUES(?, ?, ?, ?)";
-    private final static String UPDATE_USER = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ?" +
+    private static final String FIND_ALL_USERS = "SELECT * FROM users";
+    private static final String CREATE_USER = "INSERT INTO users(email, login, name, birthday) VALUES(?, ?, ?, ?)";
+    private static final String UPDATE_USER = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ?" +
             " WHERE user_id = ?";
-    private final static String GET_USER = "SELECT * FROM users WHERE user_id = ?";
-    private final static String GET_FRIENDS = "SELECT * FROM users AS u " +
+    private static final String GET_USER = "SELECT * FROM users WHERE user_id = ?";
+    private static final String GET_FRIENDS = "SELECT * FROM users AS u " +
             "INNER JOIN friends AS f ON u.user_id = f.friend_id WHERE f.user_id = ?";
-    private final static String GET_COMMON_FRIENDS = "SELECT * FROM users AS u WHERE u.user_id IN (" +
+    private static final String GET_COMMON_FRIENDS = "SELECT * FROM users AS u WHERE u.user_id IN (" +
             "SELECT friend_id FROM friends WHERE user_id = ?) " +
             "AND u.user_id IN (SELECT friend_id FROM friends WHERE user_id = ?)";
-    private final static String EXISTS_USER = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+    private static final String EXISTS_USER = "SELECT COUNT(*) FROM users WHERE user_id = ?";
 
     @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate, UserValidation validation, FriendsDao friendsDao) {

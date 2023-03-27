@@ -30,18 +30,18 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaDao mpaDao;
     private final FilmValidation validation;
     private final GenreDao genreDao;
-    private final static String FIND_ALL_FILMS = "SELECT * FROM films";
-    private final static String CREATE_FILM = "INSERT INTO films(name, description, release_date, duration, mpa_id)" +
+    private static final String FIND_ALL_FILMS = "SELECT * FROM films";
+    private static final String CREATE_FILM = "INSERT INTO films(name, description, release_date, duration, mpa_id)" +
             " VALUES (?, ?, ?, ?, ?)";
-    private final static String UPDATE_FILM = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
+    private static final String UPDATE_FILM = "UPDATE films SET name = ?, description = ?, release_date = ?, " +
             "duration = ?, mpa_id = ? WHERE film_id = ?";
-    private final static String GET_FILM = "SELECT * FROM films WHERE film_id = ?";
-    private final static String FIND_POPULAR_FILM = "SELECT * FROM films AS f " +
+    private static final String GET_FILM = "SELECT * FROM films WHERE film_id = ?";
+    private static final String FIND_POPULAR_FILM = "SELECT * FROM films AS f " +
             "LEFT OUTER JOIN film_rating AS fr ON f.film_id = fr.film_id " +
             "GROUP BY f.film_id ORDER BY COUNT(fr.user_id) DESC LIMIT ?";
-    private final static String EXISTS_FILM = "SELECT COUNT(*) FROM films WHERE film_id = ?";
-    private final static String EXISTS_GENRE = "SELECT COUNT(*) FROM film_genre WHERE (genre_id = ? AND film_id = ?)";
-    private final static String EXISTS_USER = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+    private static final String EXISTS_FILM = "SELECT COUNT(*) FROM films WHERE film_id = ?";
+    private static final String EXISTS_GENRE = "SELECT COUNT(*) FROM film_genre WHERE (genre_id = ? AND film_id = ?)";
+    private static final String EXISTS_USER = "SELECT COUNT(*) FROM users WHERE user_id = ?";
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmGenreDao filmGenreDao,

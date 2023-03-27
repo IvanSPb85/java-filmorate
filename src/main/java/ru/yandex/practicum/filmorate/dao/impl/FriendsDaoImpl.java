@@ -11,12 +11,12 @@ import java.util.Set;
 @Repository
 public class FriendsDaoImpl implements FriendsDao {
     private final JdbcTemplate jdbcTemplate;
-    private final static String ADD_FRIEND = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
-    private final static String DELETE_FRIEND = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+    private static final String ADD_FRIEND = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
+    private static final String DELETE_FRIEND = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
 
-    private final static String FIND_FRIENDS = "SELECT friend_id FROM friends WHERE user_id = ?";
+    private static final String FIND_FRIENDS = "SELECT friend_id FROM friends WHERE user_id = ?";
 
-    private final static String EXISTS_FRIENDSHIP = "SELECT COUNT(*) FROM friends " +
+    private static final String EXISTS_FRIENDSHIP = "SELECT COUNT(*) FROM friends " +
             "WHERE user_id = ? AND friend_id = ?";
 
     @Autowired

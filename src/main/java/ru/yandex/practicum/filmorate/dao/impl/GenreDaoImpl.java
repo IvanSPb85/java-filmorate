@@ -14,12 +14,12 @@ import java.util.NoSuchElementException;
 @Repository
 public class GenreDaoImpl implements GenreDao {
     private final JdbcTemplate jdbcTemplate;
-    private final static String FIND_GENRE_BY_ID = "SELECT * FROM genre WHERE genre_id = ?";
-    private final static String FIND_ALL_GENRES = "SELECT * FROM genre";
-    private final static String FIND_GENRE_BY_FILM = "SELECT * FROM genre WHERE genre_id IN (" +
+    private static final String FIND_GENRE_BY_ID = "SELECT * FROM genre WHERE genre_id = ?";
+    private static final String FIND_ALL_GENRES = "SELECT * FROM genre";
+    private static final String FIND_GENRE_BY_FILM = "SELECT * FROM genre WHERE genre_id IN (" +
             "SELECT genre_id FROM film_genre WHERE film_id = ?)";
 
-    private final static String EXISTS_GENRE = "SELECT COUNT(*) FROM genre WHERE genre_id = ?";
+    private static final String EXISTS_GENRE = "SELECT COUNT(*) FROM genre WHERE genre_id = ?";
 
     @Autowired
     public GenreDaoImpl(JdbcTemplate jdbcTemplate) {

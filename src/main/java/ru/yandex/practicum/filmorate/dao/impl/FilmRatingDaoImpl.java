@@ -11,10 +11,10 @@ import java.util.Set;
 @Repository
 public class FilmRatingDaoImpl implements FilmRatingDao {
     private final JdbcTemplate jdbcTemplate;
-    private final static String ADD_LIKE = "INSERT INTO film_rating(film_id, user_id) VALUES(?, ?)";
-    private final static String DELETE_LIKE = "DELETE FROM film_rating WHERE (film_id = ? AND user_id = ?)";
+    private static final String ADD_LIKE = "INSERT INTO film_rating(film_id, user_id) VALUES(?, ?)";
+    private static final String DELETE_LIKE = "DELETE FROM film_rating WHERE (film_id = ? AND user_id = ?)";
 
-    private final static String FIND_RATING_FILM = "SELECT user_id FROM film_rating WHERE film_id = ?";
+    private static final String FIND_RATING_FILM = "SELECT user_id FROM film_rating WHERE film_id = ?";
 
     @Autowired
     public FilmRatingDaoImpl(JdbcTemplate jdbcTemplate) {
