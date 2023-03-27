@@ -14,9 +14,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Repository
 public class UserDbStorage implements UserStorage {
@@ -105,12 +103,23 @@ public class UserDbStorage implements UserStorage {
     }
 
     private User mapRowToUser(ResultSet rs, int rawNum) throws SQLException {
+        Long userId = rs.getLong("user_id");
         return User.builder()
-                .id(rs.getLong("user_id"))
+                .id(userId)
                 .email(rs.getString("email"))
                 .login(rs.getString("login"))
                 .name(rs.getString("name"))
-                .birthday(rs.getDate("birthday").toLocalDate()).build();
+                .birthday(rs.getDate("birthday").toLocalDate())
+                .friends(friendsDao.findFriends(userId))
+                .friendStatus(findFriendStatus(userId)).build();
+    }
+
+    private Map<Long, Boolean> findFriendStatus(Long userId) {
+        Map<Long, Boolean> status = new HashMap<>();
+        for (Long friend : friendsDao.findFriends(userId)) {
+            status.put(friend, friendsDao.existsFriendship(friend, userId));
+        }
+        return status;
     }
 
     private boolean existsUser(long userID) {

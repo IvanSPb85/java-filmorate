@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -20,6 +19,8 @@ public class GenreDaoImpl implements GenreDao {
     private final static String FIND_GENRE_BY_FILM = "SELECT * FROM genre WHERE genre_id IN (" +
             "SELECT genre_id FROM film_genre WHERE film_id = ?)";
 
+    private final static String EXISTS_GENRE = "SELECT COUNT(*) FROM genre WHERE genre_id = ?";
+
     @Autowired
     public GenreDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -27,14 +28,8 @@ public class GenreDaoImpl implements GenreDao {
 
     @Override
     public Genre findGenreById(int genreId) {
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(FIND_GENRE_BY_ID, genreId);
-        if (!sqlRowSet.next()) {
-            throw new NoSuchElementException("genreId: " + genreId + " не найден.");
-        }
-        return Genre.builder()
-                .id(sqlRowSet.getInt("genre_id"))
-                .name(sqlRowSet.getString("name"))
-                .build();
+        existsGenre(genreId);
+        return jdbcTemplate.queryForObject(FIND_GENRE_BY_ID, this::mapRowToGenre, genreId);
     }
 
     @Override
@@ -52,5 +47,13 @@ public class GenreDaoImpl implements GenreDao {
                 .id(resultSet.getInt("genre_id"))
                 .name(resultSet.getString("name"))
                 .build();
+    }
+
+    private boolean existsGenre(int genreId) {
+        int result = jdbcTemplate.queryForObject(EXISTS_GENRE, Integer.class, genreId);
+        if (result != 1) {
+            throw new NoSuchElementException("genreId: " + genreId + " не найден.");
+        }
+        return true;
     }
 }

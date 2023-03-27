@@ -13,7 +13,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
     private final UserValidation validation;
-    private Long counterId;
+    private Long counterId = 0L;
     private final Map<Long, User> users = new HashMap<>();
 
     @Override

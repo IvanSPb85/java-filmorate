@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -18,6 +17,8 @@ public class MpaDaoImpl implements MpaDao {
     private final static String FIND_MPA_BY_ID = "SELECT * FROM mpa WHERE mpa_id = ?";
     private final static String FIND_ALL_MPA = "SELECT * FROM mpa";
 
+    private final static String EXISTS_MPA = "SELECT COUNT(*) FROM mpa WHERE mpa_id = ?";
+
     @Autowired
     public MpaDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -25,14 +26,8 @@ public class MpaDaoImpl implements MpaDao {
 
     @Override
     public Mpa findMpaById(int mpaId) {
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(FIND_MPA_BY_ID, mpaId);
-        if (!sqlRowSet.next()) {
-            throw new NoSuchElementException("mpaId: " + mpaId + " не найден.");
-        }
-        return Mpa.builder()
-                .id(sqlRowSet.getInt("mpa_id"))
-                .name(sqlRowSet.getString("name"))
-                .build();
+        existsMpa(mpaId);
+        return jdbcTemplate.queryForObject(FIND_MPA_BY_ID, this::mapRowToMpa, mpaId);
     }
 
     @Override
@@ -45,5 +40,13 @@ public class MpaDaoImpl implements MpaDao {
                 .id(resultSet.getInt("mpa_id"))
                 .name(resultSet.getString("name"))
                 .build();
+    }
+
+    private boolean existsMpa(int mpaId) {
+        int result = jdbcTemplate.queryForObject(EXISTS_MPA, Integer.class, mpaId);
+        if (result != 1) {
+            throw new NoSuchElementException("mpaId: " + mpaId + " не найден.");
+        }
+        return true;
     }
 }

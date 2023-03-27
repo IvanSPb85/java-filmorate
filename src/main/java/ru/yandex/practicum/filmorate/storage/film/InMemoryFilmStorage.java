@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
     private final FilmValidation validation;
-    private Long counterId;
+    private Long counterId = 0L;
     private final Map<Long, Film> films = new HashMap<>();
 
     @Override

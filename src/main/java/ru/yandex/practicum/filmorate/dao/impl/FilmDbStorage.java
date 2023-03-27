@@ -128,14 +128,16 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rawNum) throws SQLException {
+        Long filmId = resultSet.getLong("film_id");
         return Film.builder()
-                .id(resultSet.getLong("film_id"))
+                .id(filmId)
                 .name(resultSet.getString("name"))
                 .description(resultSet.getString("description"))
                 .releaseDate(resultSet.getDate("release_date").toLocalDate())
                 .duration(resultSet.getInt("duration"))
                 .mpa(mpaDao.findMpaById(resultSet.getInt("mpa_id")))
-                .genres(genreDao.findGenresByFilm(resultSet.getLong("film_id")))
+                .genres(genreDao.findGenresByFilm(filmId))
+                .rating(filmRatingDao.findRatingFilm(filmId))
                 .build();
     }
 
