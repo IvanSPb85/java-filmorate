@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.dao.impl.FilmDbStorage;
+import ru.yandex.practicum.filmorate.dao.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
@@ -28,36 +25,25 @@ public class FilmDbStorageTests {
     private final FilmDbStorage filmStorage;
     private final MpaDao mpaDao;
     private final GenreDao genreDao;
-
-    @BeforeAll
-    public void createFilms() {
-        Film firstFilm = filmStorage.createFilm(Film.builder()
-                .name("firstFilm")
-                .description("firstDescription")
-                .releaseDate(LocalDate.of(2001, 01, 01))
-                .duration(100)
-                .mpa(mpaDao.findMpaById(1))
-                .genres(List.of(genreDao.findGenreById(1), genreDao.findGenreById(2)))
-                .build());
-
-        Film secondFilm = filmStorage.createFilm(Film.builder()
-                .name("secondFilm")
-                .description("secondDescription")
-                .releaseDate(LocalDate.of(2002, 02, 02))
-                .duration(200)
-                .mpa(mpaDao.findMpaById(2))
-                .genres(List.of(genreDao.findGenreById(3), genreDao.findGenreById(4)))
-                .build());
-    }
+    private final UserDbStorage userStorage;
 
     @Test
     public void createFilmTest() {
-        Optional<Film> filmOptional = Optional.of(filmStorage.getFilm(1L));
+        filmStorage.createFilm(Film.builder()
+                .name("3Film")
+                .description("3Description")
+                .releaseDate(LocalDate.of(2003, 03, 03))
+                .duration(300)
+                .mpa(mpaDao.findMpaById(3))
+                .genres(List.of(genreDao.findGenreById(3), genreDao.findGenreById(4)))
+                .build());
+
+        Optional<Film> filmOptional = Optional.of(filmStorage.getFilm(3L));
 
         assertThat(filmOptional)
                 .isPresent()
                 .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("id", 1L));
+                        assertThat(film).hasFieldOrPropertyWithValue("id", 3L));
     }
 
     @Test
@@ -95,11 +81,40 @@ public class FilmDbStorageTests {
 
         assertThat(filmOptional).isPresent()
                 .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("id", 2L));
+                        assertThat(film).hasFieldOrPropertyWithValue("id", 2L)
+                                .hasFieldOrPropertyWithValue("name", "secondFilm"));
     }
 
     @Test
     public void addLikeTest() {
+        filmStorage.addLike(2L, 1L);
+        Optional<Film> filmOptional = Optional.of(filmStorage.getFilm(2L));
 
+        assertThat(filmOptional).isPresent()
+                .hasValueSatisfying(film ->
+                        assertThat(film).hasFieldOrPropertyWithValue("rating",
+                                new TreeSet<Long>(Collections.singleton(1L))));
+    }
+
+    @Test
+    public void deleteLikeTest() {
+        filmStorage.deleteLike(2L, 1L);
+
+        Optional<Film> filmOptional = Optional.of(filmStorage.getFilm(2L));
+
+        assertThat(filmOptional).isPresent()
+                .hasValueSatisfying(film ->
+                        assertThat(film).hasFieldOrPropertyWithValue("rating", new TreeSet<Long>()));
+    }
+
+    @Test
+    public void findPopularFilmsTest() {
+        filmStorage.addLike(1L, 1L);
+
+        Optional<List<Film>> optionalFilms = Optional.of(filmStorage.findPopularFilms(1));
+
+        assertThat(optionalFilms).isPresent()
+                .hasValueSatisfying(films ->
+                        assertThat(films).hasSize(1));
     }
 }
