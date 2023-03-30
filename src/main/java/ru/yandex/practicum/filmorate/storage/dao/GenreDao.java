@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.storage.dao;
 
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -8,6 +8,4 @@ public interface GenreDao {
     Genre findGenreById(int genreId);
 
     List<Genre> findAllGenres();
-
-    List<Genre> findGenresByFilm(Long filmId);
 }

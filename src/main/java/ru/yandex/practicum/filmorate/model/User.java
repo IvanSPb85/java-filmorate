@@ -3,16 +3,16 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Data
 @Builder
 public class User {
     @Builder.Default
-    private final Set<Long> friends = new TreeSet<>();
+    private List<Long> friends = new ArrayList<>();
     private Long id;
     private String email;
     private String login;

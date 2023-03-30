@@ -1,9 +1,9 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.storage.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
+import ru.yandex.practicum.filmorate.storage.dao.MpaDao;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
@@ -16,7 +16,6 @@ public class MpaDaoImpl implements MpaDao {
     private final JdbcTemplate jdbcTemplate;
     private static final String FIND_MPA_BY_ID = "SELECT * FROM mpa WHERE mpa_id = ?";
     private static final String FIND_ALL_MPA = "SELECT * FROM mpa";
-
     private static final String EXISTS_MPA = "SELECT COUNT(*) FROM mpa WHERE mpa_id = ?";
 
     @Autowired

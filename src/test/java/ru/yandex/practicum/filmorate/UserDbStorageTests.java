@@ -6,8 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.dao.impl.FriendsDaoImpl;
-import ru.yandex.practicum.filmorate.dao.impl.UserDbStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -20,18 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserDbStorageTests {
-    private final UserDbStorage userDbStorage;
-    private final FriendsDaoImpl friendsDao;
+    private final UserService userService;
 
     @Test
     public void createUserTest() {
-        userDbStorage.createUser(User.builder()
+        userService.createUser(User.builder()
                 .birthday(LocalDate.now())
                 .name("myName")
                 .login("myLogin")
                 .email("my@email").build());
 
-        Optional<User> optionalUser = Optional.of(userDbStorage.getUser(4L));
+        Optional<User> optionalUser = Optional.of(userService.findUser(4L));
 
         assertThat(optionalUser)
                 .isPresent()
@@ -41,7 +39,7 @@ public class UserDbStorageTests {
 
     @Test
     public void findAllUsersTest() {
-        Optional<Collection<User>> allUsers = Optional.of(userDbStorage.findAllUsers());
+        Optional<Collection<User>> allUsers = Optional.of(userService.findAllUsers());
 
         assertThat(allUsers).isPresent()
                 .hasValueSatisfying(films ->
@@ -56,7 +54,7 @@ public class UserDbStorageTests {
                 .name("updateName")
                 .login("updateLogin")
                 .email("update@email").build();
-        Optional<User> filmOptional = Optional.of(userDbStorage.updateUser(updateUser));
+        Optional<User> filmOptional = Optional.of(userService.updateUser(updateUser));
 
         assertThat(filmOptional).isPresent()
                 .hasValueSatisfying(film ->
@@ -66,7 +64,7 @@ public class UserDbStorageTests {
 
     @Test
     public void getUserTest() {
-        Optional<User> userOptional = Optional.of(userDbStorage.getUser(2L));
+        Optional<User> userOptional = Optional.of(userService.findUser(2L));
 
         assertThat(userOptional).isPresent()
                 .hasValueSatisfying(film ->
@@ -76,9 +74,9 @@ public class UserDbStorageTests {
 
     @Test
     public void addFriendAndGetFriendsTests() {
-        userDbStorage.addFriend(1L, 2L);
+        userService.addFriend(1L, 2L);
 
-        Optional<List<User>> userListOptional = Optional.of(userDbStorage.getFriends(1L));
+        Optional<List<User>> userListOptional = Optional.of(userService.findFriends(1L));
 
         assertThat(userListOptional).isPresent()
                 .hasValueSatisfying(userList ->
@@ -87,10 +85,10 @@ public class UserDbStorageTests {
 
     @Test
     public void deleteFriendTest() {
-        userDbStorage.addFriend(2L, 1L);
-        userDbStorage.deleteFriend(2L, 1L);
+        userService.addFriend(2L, 1L);
+        userService.deleteFriend(2L, 1L);
 
-        Optional<List<User>> userListOptional = Optional.of(userDbStorage.getFriends(2L));
+        Optional<List<User>> userListOptional = Optional.of(userService.findFriends(2L));
 
         assertThat(userListOptional).isPresent()
                 .hasValueSatisfying(userList ->
@@ -99,18 +97,16 @@ public class UserDbStorageTests {
 
     @Test
     public void getCommonFriendsTest() {
-        User friend = userDbStorage.createUser(User.builder()
+        User friend = userService.createUser(User.builder()
                 .birthday(LocalDate.now())
                 .name("friend")
                 .login("friendLogin")
-                .email("friend@email")
-                .friends(friendsDao.findFriends(3L))
-                .friendStatus(Map.of()).build());
+                .email("friend@email").build());
 
-        userDbStorage.addFriend(3L, 5L);
-        userDbStorage.addFriend(4L, 5L);
+        userService.addFriend(3L, 5L);
+        userService.addFriend(4L, 5L);
 
-        Optional<List<User>> optionalUserList = Optional.of(userDbStorage.getCommonFriends(3L, 4L));
+        Optional<List<User>> optionalUserList = Optional.of(userService.findCommonFriends(3L, 4L));
 
         assertThat(optionalUserList).isPresent()
                 .hasValueSatisfying(userList ->

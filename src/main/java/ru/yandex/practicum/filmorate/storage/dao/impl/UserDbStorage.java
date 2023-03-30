@@ -1,14 +1,13 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.storage.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.FriendsDao;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.dao.UserExtractor;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.validator.UserValidation;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -19,13 +18,19 @@ import java.util.*;
 @Repository
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final UserValidation validation;
-    private final FriendsDao friendsDao;
-    private static final String FIND_ALL_USERS = "SELECT * FROM users";
+    private final UserExtractor userExtractor;
+    private static final String FIND_ALL_USERS = "SELECT u.user_id, u.email, u.login, " +
+            "u.name, u.birthday, f.friend_id FROM users AS u " +
+            "LEFT JOIN friends AS f ON u.user_Id = f.user_id " +
+            "GROUP BY u.user_id, f.friend_id";
     private static final String CREATE_USER = "INSERT INTO users(email, login, name, birthday) VALUES(?, ?, ?, ?)";
     private static final String UPDATE_USER = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ?" +
             " WHERE user_id = ?";
-    private static final String GET_USER = "SELECT * FROM users WHERE user_id = ?";
+    private static final String GET_USER = "SELECT u.user_id, u.email, u.login, " +
+            "u.name, u.birthday, f.friend_id FROM users AS u " +
+            "LEFT JOIN friends AS f ON u.user_Id = f.user_id " +
+            "WHERE u.user_id = ? " +
+            "GROUP BY u.user_id, f.friend_id";
     private static final String GET_FRIENDS = "SELECT * FROM users AS u " +
             "INNER JOIN friends AS f ON u.user_id = f.friend_id WHERE f.user_id = ?";
     private static final String GET_COMMON_FRIENDS = "SELECT * FROM users AS u WHERE u.user_id IN (" +
@@ -34,20 +39,20 @@ public class UserDbStorage implements UserStorage {
     private static final String EXISTS_USER = "SELECT COUNT(*) FROM users WHERE user_id = ?";
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, UserValidation validation, FriendsDao friendsDao) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, UserExtractor userExtractor) {
         this.jdbcTemplate = jdbcTemplate;
-        this.validation = validation;
-        this.friendsDao = friendsDao;
+        this.userExtractor = userExtractor;
     }
 
     @Override
     public Collection<User> findAllUsers() {
-        return jdbcTemplate.query(FIND_ALL_USERS, this::mapRowToUser);
+        Map<User, List<Long>> userListMap = jdbcTemplate.query(FIND_ALL_USERS, userExtractor);
+        userListMap.forEach(User::setFriends);
+        return userListMap.keySet();
     }
 
     @Override
     public User createUser(User user) {
-        validation.isValid(user);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -70,27 +75,27 @@ public class UserDbStorage implements UserStorage {
         existsUser(user.getId());
         jdbcTemplate.update(UPDATE_USER, user.getEmail(), user.getLogin(),
                 user.getName(), user.getBirthday(), user.getId());
-        return getUser(user.getId());
+        return user;
     }
 
     @Override
     public User getUser(Long userId) {
         existsUser(userId);
-        return jdbcTemplate.queryForObject(GET_USER, this::mapRowToUser, userId);
+        Map<User, List<Long>> users = jdbcTemplate.query(GET_USER, userExtractor, userId);
+        users.forEach(User::setFriends);
+        return users.keySet().stream().findFirst().get();
     }
 
     @Override
     public void addFriend(Long userId, Long friendId) {
         existsUser(friendId);
         existsUser(userId);
-        friendsDao.addFriend(userId, friendId);
     }
 
     @Override
     public void deleteFriend(Long userId, Long friendId) {
         existsUser(friendId);
         existsUser(userId);
-        friendsDao.deleteFriend(userId, friendId);
     }
 
     @Override
@@ -110,17 +115,7 @@ public class UserDbStorage implements UserStorage {
                 .email(rs.getString("email"))
                 .login(rs.getString("login"))
                 .name(rs.getString("name"))
-                .birthday(rs.getDate("birthday").toLocalDate())
-                .friends(friendsDao.findFriends(userId))
-                .friendStatus(findFriendStatus(userId)).build();
-    }
-
-    private Map<Long, Boolean> findFriendStatus(Long userId) {
-        Map<Long, Boolean> status = new HashMap<>();
-        for (Long friend : friendsDao.findFriends(userId)) {
-            status.put(friend, friendsDao.existsFriendship(friend, userId));
-        }
-        return status;
+                .birthday(rs.getDate("birthday").toLocalDate()).build();
     }
 
     private boolean existsUser(long userID) {

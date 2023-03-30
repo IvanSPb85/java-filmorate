@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.validator.FilmValidation;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
-    private final FilmValidation validation;
     private Long counterId = 0L;
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -24,7 +22,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-        validation.isValid(film);
         getNextId();
         film.setId(counterId);
         films.put(counterId, film);
@@ -46,19 +43,19 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void addLike(Long filmId, Long userId) {
-        getFilm(filmId).getRating().add(userId);
+        Film film = getFilm(filmId);
+        film.setRating(film.getRating() + 1);
     }
 
     @Override
     public void deleteLike(Long filmId, Long userId) throws NoSuchElementException {
         Film film = getFilm(filmId);
-        if (film.getRating().contains(userId)) film.getRating().remove(userId);
-        else throw new NoSuchElementException("userId: " + userId + " не найден.");
+        film.setRating(film.getRating() - 1);
     }
 
     @Override
     public List<Film> findPopularFilms(Integer count) {
-        return findAllFilms().stream().sorted((o1, o2) -> o2.getRating().size() - o1.getRating().size())
+        return findAllFilms().stream().sorted((o1, o2) -> o2.getRating() - o1.getRating())
                 .limit(count).collect(Collectors.toList());
     }
 

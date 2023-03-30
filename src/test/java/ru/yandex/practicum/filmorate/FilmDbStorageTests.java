@@ -6,10 +6,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.dao.GenreDao;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
-import ru.yandex.practicum.filmorate.dao.impl.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dao.impl.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.dao.GenreDao;
+import ru.yandex.practicum.filmorate.storage.dao.MpaDao;
+import ru.yandex.practicum.filmorate.storage.dao.impl.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.dao.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -92,8 +92,7 @@ public class FilmDbStorageTests {
 
         assertThat(filmOptional).isPresent()
                 .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("rating",
-                                new TreeSet<Long>(Collections.singleton(1L))));
+                        assertThat(film).hasFieldOrPropertyWithValue("rating",1));
     }
 
     @Test
@@ -104,14 +103,14 @@ public class FilmDbStorageTests {
 
         assertThat(filmOptional).isPresent()
                 .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("rating", new TreeSet<Long>()));
+                        assertThat(film).hasFieldOrPropertyWithValue("rating", 1));
     }
 
     @Test
     public void findPopularFilmsTest() {
         filmStorage.addLike(1L, 1L);
 
-        Optional<List<Film>> optionalFilms = Optional.of(filmStorage.findPopularFilms(1));
+        Optional<Collection<Film>> optionalFilms = Optional.of(filmStorage.findPopularFilms(1));
 
         assertThat(optionalFilms).isPresent()
                 .hasValueSatisfying(films ->

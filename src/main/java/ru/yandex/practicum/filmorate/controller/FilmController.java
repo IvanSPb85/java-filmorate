@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import static ru.yandex.practicum.filmorate.constant.Constant.*;
 
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -59,8 +58,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<Film>> findPopularFilms(@RequestParam(defaultValue = "10") Integer count,
-                                                       HttpServletRequest request) {
+    public ResponseEntity<Collection<Film>> findPopularFilms(@RequestParam(defaultValue = "10") Integer count,
+                                                             HttpServletRequest request) {
         log.info(REQUEST_GET_LOG, request.getRequestURI());
         return new ResponseEntity<>(service.findPopularFilms(count), HttpStatus.OK);
     }

@@ -1,11 +1,13 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.storage.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.FriendsDao;
+import ru.yandex.practicum.filmorate.storage.dao.FriendsDao;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Repository
@@ -34,14 +36,21 @@ public class FriendsDaoImpl implements FriendsDao {
         jdbcTemplate.update(DELETE_FRIEND, userId, friendId);
     }
 
-    @Override
-    public Set<Long> findFriends(Long userId) {
+    private Set<Long> findFriends(Long userId) {
         return new HashSet<>(jdbcTemplate.query(FIND_FRIENDS, (rs, rowNum) ->
                 (rs.getLong("friend_id")), userId));
     }
 
     @Override
-    public boolean existsFriendship(Long userId, Long friendId) {
+    public Map<Long, Boolean> findFriendStatus(Long userId) {
+        Map<Long, Boolean> status = new HashMap<>();
+        for (Long friend : findFriends(userId)) {
+            status.put(friend, existsFriendship(friend, userId));
+        }
+        return status;
+    }
+
+    private boolean existsFriendship(Long userId, Long friendId) {
         int result = jdbcTemplate.queryForObject(EXISTS_FRIENDSHIP, Integer.class, userId, friendId);
         return result == 1;
     }

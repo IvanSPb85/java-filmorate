@@ -1,9 +1,9 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.storage.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.GenreDao;
+import ru.yandex.practicum.filmorate.storage.dao.GenreDao;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
@@ -35,11 +35,6 @@ public class GenreDaoImpl implements GenreDao {
     @Override
     public List<Genre> findAllGenres() {
         return jdbcTemplate.query(FIND_ALL_GENRES, this::mapRowToGenre);
-    }
-
-    @Override
-    public List<Genre> findGenresByFilm(Long filmId) {
-        return jdbcTemplate.query(FIND_GENRE_BY_FILM, this::mapRowToGenre, filmId);
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rawNum) throws SQLException {

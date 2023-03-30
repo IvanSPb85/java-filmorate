@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.UserValidation;
 
 import java.util.*;
 
@@ -12,7 +11,6 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
-    private final UserValidation validation;
     private Long counterId = 0L;
     private final Map<Long, User> users = new HashMap<>();
 
@@ -23,7 +21,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
-        validation.isValid(user);
         getNextId();
         user.setId(counterId);
         users.put(counterId, user);

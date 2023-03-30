@@ -1,12 +1,8 @@
-package ru.yandex.practicum.filmorate.dao;
-
-import java.util.Set;
+package ru.yandex.practicum.filmorate.storage.dao;
 
 public interface FilmRatingDao {
 
     void addLike(Long filmId, Long userID);
 
     void deleteLike(Long filmId, Long userId);
-
-    Set<Long> findRatingFilm(Long filmId);
 }

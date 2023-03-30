@@ -1,9 +1,9 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.storage.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
+import ru.yandex.practicum.filmorate.storage.dao.FilmGenreDao;
 
 @Repository
 public class FilmGenreDaoImpl implements FilmGenreDao {
