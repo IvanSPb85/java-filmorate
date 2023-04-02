@@ -4,16 +4,17 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 @Data
 @Builder
 public class Film {
-    private final Set<Long> rating = new TreeSet<>();
-    private int id;
+    private int rating;
+    private Long id;
     private String name;
     private String description;
     private LocalDate releaseDate;
     private int duration;
+    private Mpa mpa;
+    private List<Genre> genres;
 }

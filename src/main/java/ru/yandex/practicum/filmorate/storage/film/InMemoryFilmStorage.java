@@ -4,20 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.validator.FilmValidation;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
-    private final FilmValidation validation;
-    private int counterId;
-    private final Map<Integer, Film> films = new HashMap<>();
+    private Long counterId = 0L;
+    private final Map<Long, Film> films = new HashMap<>();
 
     @Override
     public Collection<Film> findAllFilms() {
@@ -26,7 +22,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-        validation.isValid(film);
         getNextId();
         film.setId(counterId);
         films.put(counterId, film);
@@ -39,6 +34,29 @@ public class InMemoryFilmStorage implements FilmStorage {
             films.put(film.getId(), film);
         } else throw new NoSuchElementException("Фильм по запросу не найден в хранилище!");
         return film;
+    }
+
+    @Override
+    public Film getFilm(Long filmId) throws NoSuchElementException {
+        return findAllFilms().stream().filter(u -> u.getId().equals(filmId)).findFirst().get();
+    }
+
+    @Override
+    public void addLike(Long filmId, Long userId) {
+        Film film = getFilm(filmId);
+        film.setRating(film.getRating() + 1);
+    }
+
+    @Override
+    public void deleteLike(Long filmId, Long userId) throws NoSuchElementException {
+        Film film = getFilm(filmId);
+        film.setRating(film.getRating() - 1);
+    }
+
+    @Override
+    public List<Film> findPopularFilms(Integer count) {
+        return findAllFilms().stream().sorted((o1, o2) -> o2.getRating() - o1.getRating())
+                .limit(count).collect(Collectors.toList());
     }
 
     private void getNextId() {
